@@ -1,6 +1,6 @@
-# Ralph Looper - Claude Edition
+# Ralph Looper
 
-Clean, minimal structure with Claude integration and real-time streaming.
+Clean, minimal structure with multi-backend AI support (Claude & Codex) and real-time streaming.
 
 ## Structure
 
@@ -14,7 +14,11 @@ Clean, minimal structure with Claude integration and real-time streaming.
 ├── .tokens.json                # Token usage tracking
 │
 ├── lib/
-│   ├── config.sh              # Configuration (Claude command, spinner, colors)
+│   ├── config.sh              # Configuration (spinner, colors, limits)
+│   ├── backend.sh             # Backend dispatcher (run_backend)
+│   ├── backends/
+│   │   ├── claude.sh          # Claude stream parser
+│   │   └── codex.sh           # Codex stream parser
 │   ├── utils.sh               # Utilities (spinner, streaming, helpers)
 │   ├── tokens.sh              # Token tracking functions
 │   └── ratelimit.sh           # Rate limit handling
@@ -32,20 +36,40 @@ Clean, minimal structure with Claude integration and real-time streaming.
 
 ```bash
 # Create structure
-mkdir -p .ralph/{lib,prompts,templates}
+mkdir -p .ralph/{lib/backends,prompts,templates}
 
 # Copy files
 cp ralph.sh ralph-prompt.md prd.json requirements.md .ralph/
-cp lib/* .ralph/lib/
+cp lib/*.sh .ralph/lib/
+cp lib/backends/*.sh .ralph/lib/backends/
 cp templates/* .ralph/templates/
 cp prompts/* .ralph/prompts/
 
 # Make executable
 chmod +x .ralph/ralph.sh
 
-# Run
+# Run with Claude (default)
 cd .ralph
 ./ralph.sh
+
+# Run with Codex
+RALPH_BACKEND=codex ./ralph.sh
+```
+
+## Backends
+
+### Claude (default)
+
+```bash
+./ralph.sh
+# or explicitly:
+RALPH_BACKEND=claude ./ralph.sh
+```
+
+### Codex
+
+```bash
+RALPH_BACKEND=codex ./ralph.sh
 ```
 
 ## Workflow
@@ -70,7 +94,7 @@ cd .ralph
 Ralph will:
 
 - Read `ralph-prompt.md`
-- Stream Claude output in real-time
+- Stream AI output in real-time
 - Extract status block
 - Log to `progress.txt`
 - Run one task per loop
@@ -78,7 +102,7 @@ Ralph will:
 
 ## Features
 
-✅ **Uses Claude** - `claude --dangerously-skip-permissions`
+✅ **Multi-backend** - Claude or Codex via `RALPH_BACKEND` env var
 ✅ **Real-time streaming** - See output as it streams
 ✅ **Fun spinner** - 50+ rotating action words every 3 seconds
 ✅ **Task breakdown** - Golden "one small change" principle
@@ -86,14 +110,29 @@ Ralph will:
 ✅ **Organized** - lib/, templates/, and prompts/ folders
 ✅ **Clean structure** - One main script, clear separation of concerns
 
-## Config (lib/config.sh)
+## Config
+
+### Environment Variables
+
+| Variable                | Default  | Description                          |
+| ----------------------- | -------- | ------------------------------------ |
+| `RALPH_BACKEND`         | `claude` | Backend to use (`claude` or `codex`) |
+| `RALPH_MAX_LOOPS`       | `30`     | Maximum loop iterations              |
+| `RALPH_RATE_LIMIT_WAIT` | `15`     | Minutes to wait on rate limit        |
+
+### Backend Commands (lib/backends/)
+
+**Claude** (`lib/backends/claude.sh`):
 
 ```bash
-CLAUDE_CMD="claude --dangerously-skip-permissions"
-MAX_LOOPS=30
+claude --dangerously-skip-permissions --print --verbose --output-format stream-json
 ```
 
-Edit to customize.
+**Codex** (`lib/backends/codex.sh`):
+
+```bash
+codex exec --json --full-auto -
+```
 
 ## Status Block (CRITICAL)
 
@@ -133,9 +172,37 @@ Automatically tracks per loop:
 - Cost in USD
 - Timestamp
 
+## Adding New Backends
+
+1. Create `lib/backends/mybackend.sh`:
+
+```bash
+#!/usr/bin/env bash
+MYBACKEND_CMD="mybackend --json"
+
+run_mybackend() {
+    local prompt_file="$1"
+    BACKEND_OUTPUT=""
+    BACKEND_INPUT_TOKENS=0
+    BACKEND_OUTPUT_TOKENS=0
+    BACKEND_RATE_LIMITED=false
+    BACKEND_RATE_LIMIT_MSG=""
+
+    # Parse your backend's output format...
+}
+```
+
+2. Add to `lib/backend.sh`:
+
+```bash
+source "$SCRIPT_DIR/backends/mybackend.sh"
+# Add case in validate_backend() and run_backend()
+```
+
 ## Notes
 
-- Uses `claude --dangerously-skip-permissions` for file writes
+- Claude uses `--dangerously-skip-permissions` for file writes
+- Codex uses `--full-auto` for autonomous execution
 - Streams output in real-time with fun spinner
 - One task per loop (recommended)
 - All progress logged to `progress.txt`
