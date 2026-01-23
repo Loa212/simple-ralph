@@ -12,51 +12,15 @@ Given a PRD, you must:
 
 1. **Parse requirements** into individual stories/features
 2. **Break each into smallest tasks** - one change per task
-3. **Output as JSON** to `prd.json`
-4. **Output as Markdown** to `requirements.md`
+3. **Output as JSON** to `prd.json` (use `templates/prd.json.template`)
+4. **Output as Markdown** to `requirements.md` (use `templates/requirements.md.template`)
 
-## JSON Format (prd.json)
+## Output Formats
 
-```json
-{
-  "project": "Project Name",
-  "version": "1.0.0",
-  "stories": [
-    {
-      "id": "STORY-1",
-      "title": "Story Title",
-      "priority": 1,
-      "description": "What needs to be done",
-      "tasks": [
-        {
-          "id": "TASK-1-A",
-          "title": "First small change",
-          "description": "What exactly to build",
-          "priority": 1,
-          "passes": false
-        }
-      ],
-      "passes": false
-    }
-  ]
-}
-```
+See templates folder:
 
-## Markdown Format (requirements.md)
-
-```markdown
-# Requirements
-
-## Story 1: Story Title
-
-### Task 1-A: First small change
-- Description of what to build
-- Why it matters
-- Priority: 1
-
-## Story 2: Another Story
-...
-```
+- `templates/prd.json.template` - JSON structure for task tracking
+- `templates/requirements.md.template` - Markdown format for readable requirements
 
 ## Guidelines
 
@@ -70,9 +34,11 @@ Given a PRD, you must:
 ## Example Breakdown
 
 BAD (too big):
+
 - "Implement user authentication"
 
 GOOD (small tasks):
+
 - "Add login form HTML"
 - "Add password validation"
 - "Add form submission handler"
