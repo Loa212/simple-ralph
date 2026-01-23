@@ -1,0 +1,29 @@
+{
+  "project": "Example Project",
+  "version": "1.0.0",
+  "stories": [
+    {
+      "id": "STORY-1",
+      "title": "First Feature",
+      "priority": 1,
+      "description": "Build the first feature",
+      "tasks": [
+        {
+          "id": "TASK-1-A",
+          "title": "Setup project structure",
+          "description": "Create initial project files and structure",
+          "priority": 1,
+          "passes": false
+        },
+        {
+          "id": "TASK-1-B",
+          "title": "Add core functionality",
+          "description": "Implement main feature logic",
+          "priority": 2,
+          "passes": false
+        }
+      ],
+      "passes": false
+    }
+  ]
+}
