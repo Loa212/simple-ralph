@@ -52,7 +52,7 @@ for i in {1..100}; do
             input_tokens=$(echo "$line" | jq -r '.usage.input_tokens // 0' 2>/dev/null)
             output_tokens=$(echo "$line" | jq -r '.usage.output_tokens // 0' 2>/dev/null)
         fi
-    done < <($CLAUDE_CMD < ralph-prompt.md 2>&1)
+    done < <($MAIN_CMD < ralph-prompt.md 2>&1)
 
     echo ""
 

@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # Ralph config
 
-# Claude command with dangerous skip permissions
+# AI model command
 CLAUDE_CMD="claude --dangerously-skip-permissions --print --verbose --output-format stream-json"
+MAIN_CMD="$CLAUDE_CMD"
 
 # Configuration
 MAX_LOOPS=${RALPH_MAX_LOOPS:-30}
