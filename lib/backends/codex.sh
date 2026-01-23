@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
-# Codex backend - stream parser
+# Codex backend - JSON stream parser
+# Note: Codex CLI --json mode emits complete items, not incremental tokens.
+# True streaming requires Codex CLI updates.
 
-# Codex command
-CODEX_CMD="codex exec --json --full-auto -"
+# Codex command - use dangerously-bypass for full write access (like Claude's --dangerously-skip-permissions)
+CODEX_CMD="codex exec --json --dangerously-bypass-approvals-and-sandbox"
 
-# Run Codex and parse streaming JSONL output
+# Run Codex and parse JSONL output
 # Sets: BACKEND_OUTPUT, BACKEND_INPUT_TOKENS, BACKEND_OUTPUT_TOKENS, BACKEND_RATE_LIMITED, BACKEND_RATE_LIMIT_MSG
 run_codex() {
     local prompt_file="$1"
@@ -19,7 +21,6 @@ run_codex() {
         # Check for error events (including rate limits / auth issues)
         if echo "$line" | jq -e '.type == "error"' &>/dev/null 2>&1; then
             local error_msg=$(echo "$line" | jq -r '.message // "Unknown error"' 2>/dev/null)
-            # Check if it's a rate limit or auth error
             if echo "$error_msg" | grep -qi "rate\|limit\|token\|auth\|expired"; then
                 BACKEND_RATE_LIMITED=true
                 BACKEND_RATE_LIMIT_MSG="$error_msg"
@@ -35,7 +36,7 @@ run_codex() {
             fi
         fi
 
-        # Stream agent messages in real-time
+        # Output agent messages (appears once complete, not streaming)
         if echo "$line" | jq -e '.type == "item.completed" and .item.type == "agent_message"' &>/dev/null 2>&1; then
             text=$(echo "$line" | jq -r '.item.text // empty' 2>/dev/null)
             if [ -n "$text" ]; then
@@ -44,18 +45,10 @@ run_codex() {
             fi
         fi
 
-        # Also capture reasoning (optional - for verbose mode)
-        # if echo "$line" | jq -e '.type == "item.completed" and .item.type == "reasoning"' &>/dev/null 2>&1; then
-        #     text=$(echo "$line" | jq -r '.item.text // empty' 2>/dev/null)
-        #     if [ -n "$text" ]; then
-        #         printf "${YELLOW}[reasoning]${NC} %s\n" "$text"
-        #     fi
-        # fi
-
         # Capture token usage from turn.completed
         if echo "$line" | jq -e '.type == "turn.completed"' &>/dev/null 2>&1; then
             BACKEND_INPUT_TOKENS=$(echo "$line" | jq -r '.usage.input_tokens // 0' 2>/dev/null)
             BACKEND_OUTPUT_TOKENS=$(echo "$line" | jq -r '.usage.output_tokens // 0' 2>/dev/null)
         fi
-    done < <($CODEX_CMD < "$prompt_file" 2>&1)
+    done < <($CODEX_CMD - < "$prompt_file" 2>&1)
 }
