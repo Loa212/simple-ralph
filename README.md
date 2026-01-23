@@ -7,6 +7,7 @@ Clean, minimal structure with Claude integration and real-time streaming.
 ```
 .ralph/
 ├── ralph.sh                    # Main looper (root)
+├── ralph-prompt.md             # Ralph system prompt
 ├── prd.json                    # Project requirements (JSON)
 ├── requirements.md             # Task breakdown (Markdown)
 ├── progress.txt                # Auto-generated loop log
@@ -15,10 +16,15 @@ Clean, minimal structure with Claude integration and real-time streaming.
 ├── lib/
 │   ├── config.sh              # Configuration (Claude command, spinner, colors)
 │   ├── utils.sh               # Utilities (spinner, streaming, helpers)
-│   └── tokens.sh              # Token tracking functions
+│   ├── tokens.sh              # Token tracking functions
+│   └── ratelimit.sh           # Rate limit handling
+│
+├── templates/
+│   ├── prd.json.template      # PRD template
+│   ├── requirements.md.template # Requirements template
+│   └── progress.txt.template   # Progress log template
 │
 └── prompts/
-    ├── PROMPT.md              # Ralph system prompt
     └── convert-prd.md         # PRD → JSON/Markdown converter
 ```
 
@@ -26,11 +32,12 @@ Clean, minimal structure with Claude integration and real-time streaming.
 
 ```bash
 # Create structure
-mkdir -p .ralph/{lib,prompts}
+mkdir -p .ralph/{lib,prompts,templates}
 
 # Copy files
-cp ralph.sh prd.json requirements.md .ralph/
+cp ralph.sh ralph-prompt.md prd.json requirements.md .ralph/
 cp lib/* .ralph/lib/
+cp templates/* .ralph/templates/
 cp prompts/* .ralph/prompts/
 
 # Make executable
@@ -61,7 +68,8 @@ cd .ralph
 ```
 
 Ralph will:
-- Read `prompts/PROMPT.md`
+
+- Read `ralph-prompt.md`
 - Stream Claude output in real-time
 - Extract status block
 - Log to `progress.txt`
@@ -75,8 +83,8 @@ Ralph will:
 ✅ **Fun spinner** - 50+ rotating action words every 3 seconds
 ✅ **Task breakdown** - Golden "one small change" principle
 ✅ **Token tracking** - Logs to `.tokens.json`
-✅ **Minimal** - Just copy 9 files
-✅ **Clean structure** - lib/ for code, prompts/ for prompts
+✅ **Organized** - lib/, templates/, and prompts/ folders
+✅ **Clean structure** - One main script, clear separation of concerns
 
 ## Config (lib/config.sh)
 
@@ -119,6 +127,7 @@ jq . .tokens.json
 ## Token Tracking
 
 Automatically tracks per loop:
+
 - Loop number
 - Tokens used (input + output)
 - Cost in USD

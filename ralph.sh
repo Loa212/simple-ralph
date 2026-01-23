@@ -20,8 +20,8 @@ for i in {1..100}; do
     print_header "$i"
 
     # Check if PROMPT.md exists
-    if [ ! -f "prompts/PROMPT.md" ]; then
-        echo -e "${RED}Error: prompts/PROMPT.md not found${NC}"
+    if [ ! -f "ralph-prompt.md" ]; then
+        echo -e "${RED}Error: ralph-prompt.md not found${NC}"
         exit 1
     fi
 
@@ -52,7 +52,7 @@ for i in {1..100}; do
             input_tokens=$(echo "$line" | jq -r '.usage.input_tokens // 0' 2>/dev/null)
             output_tokens=$(echo "$line" | jq -r '.usage.output_tokens // 0' 2>/dev/null)
         fi
-    done < <($CLAUDE_CMD < prompts/PROMPT.md 2>&1)
+    done < <($CLAUDE_CMD < ralph-prompt.md 2>&1)
 
     echo ""
 

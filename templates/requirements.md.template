@@ -1,0 +1,13 @@
+# Requirements
+
+## Story 1: Story Title
+
+### Task 1-A: First small change
+- Description of what to build
+- Why it matters
+- Priority: 1
+
+### Task 1-B: Second small change
+- Description of what to build next
+- Depends on Task 1-A
+- Priority: 2
