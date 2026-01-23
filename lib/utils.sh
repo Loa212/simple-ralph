@@ -88,7 +88,13 @@ print_status() {
 log_progress() {
     local loop_num="$1"
     local status_block="$2"
-    local progress_file="${RALPH_DIR:-.}/progress.txt"
+    
+    # Ensure RALPH_DIR is set - never default to current directory
+    if [[ -z "$RALPH_DIR" ]]; then
+        echo -e "${RED}Error: RALPH_DIR not set${NC}" >&2
+        return 1
+    fi
+    local progress_file="${RALPH_DIR}/progress.txt"
     
     {
         echo "=== Loop $loop_num ==="
