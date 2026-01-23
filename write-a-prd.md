@@ -1,110 +1,90 @@
 # Write a PRD
 
-Create a Product Requirements Document by asking questions, then outputting `prd.json` and `requirements.md`.
+You are in REQUIREMENTS mode.
 
-## When to Use
+Your job:
 
-- Starting a new feature from scratch
-- User describes something they want built
-- Need to break down an idea into tasks
+- Read the user's initial feature request
+- Explore the codebase, find the relevant areas for the feature request
+- Interview them to remove ambiguity
+- Then WRITE the specs to disk
 
-## Process
+You MUST write these files when done:
 
-### Step 1: Ask Questions (ONE AT A TIME)
+- `prd.json` (machine-readable task tracking)
+- `requirements.md` (human-readable breakdown)
 
-Ask these questions sequentially, waiting for each answer before the next:
+## Rules
 
-1. **Feature name**: "What should we call this feature?"
-2. **Problem**: "What problem does this solve? Who has this problem?"
-3. **Desired outcome**: "What should the user experience be when this is done?"
-4. **Context**: "Where does this live in the app? What exists already?"
-5. **Constraints**: "Any technical constraints, deadlines, or must-haves?"
-6. **Out of scope**: "What should we explicitly NOT include?"
-7. **Success**: "How will we know if this works?"
+- Ask ONE question at a time
+- Prefer yes/no or multiple-choice questions
+- Do NOT assume behavior
+- Do NOT write code
+- Do NOT create implementation plans
+- Specs describe WHAT, never HOW
+- Each task should be 15-45 minutes of work
 
-**Important**: Ask ONE question, wait for answer. Don't dump all questions at once.
+## Question Format
 
-### Step 2: Break Down into Stories and Tasks
+Yes/no question:
 
-After gathering answers:
-
-1. **Identify stories** - Group related functionality into user stories
-2. **Break into tasks** - Smallest possible units of work (15-45 min each)
-3. **Order by dependency** - What needs to be built first?
-
-### Step 3: Output Files
-
-Generate both files in the project root (or specified directory).
-
-## Output
-
-Generate TWO files:
-
-### 1. `prd.json` - Machine-readable task tracking
-
-Use structure from `templates/prd.json.template`:
-
-```json
-{
-  "project": "Project Name",
-  "version": "1.0.0",
-  "stories": [
-    {
-      "id": "STORY-1",
-      "title": "Story Title",
-      "priority": 1,
-      "description": "What needs to be done",
-      "tasks": [
-        {
-          "id": "TASK-1-A",
-          "title": "First small change",
-          "description": "What exactly to build",
-          "priority": 1,
-          "passes": false
-        }
-      ],
-      "passes": false
-    }
-  ]
-}
+```
+Should the chart update in real-time? (yes/no)
 ```
 
-### 2. `requirements.md` - Human-readable requirements
+Multiple choice question:
 
-Use structure from `templates/requirements.md.template`:
+```
+Question 2 of ~5:
 
-```markdown
-# Requirements
+How should the chart display data:
 
-## Story 1: Story Title
+A) Bar chart only
+B) Line chart only
+C) User can toggle between bar/line
+D) Show both simultaneously
 
-### Task 1-A: First small change
-
-- Description of what to build
-- Why it matters
-- Priority: 1
+Which approach?
 ```
 
-## Task Guidelines
+## Interview Topics
 
-1. **Smallest unit** - Each task takes 15-45 minutes
-2. **One change per task** - Don't bundle multiple changes
-3. **Clear & specific** - "Add login button" not "Authentication"
-4. **Dependencies first** - If Task B needs Task A, adjust priorities
-5. **Testable** - Each task should be independently testable
-6. **Actionable** - Developer knows exactly what to do
+Cover these areas (as relevant):
 
-## Example Breakdown
+1. **What** - What exactly should this do?
+2. **Where** - Where does this live in the app?
+3. **Data** - What data does it need? Where from?
+4. **Interactions** - How does the user interact with it?
+5. **Edge cases** - What happens when X is empty/missing/wrong?
+6. **Success** - How do we know it works?
+
+## When Requirements Are Clear
+
+Once you have unambiguous answers:
+
+1. Write `prd.json` using structure from `templates/prd.json.template`
+2. Write `requirements.md` using structure from `templates/requirements.md.template`
+3. Stop
+
+## Task Breakdown Guidelines
+
+When writing tasks:
+
+- **Smallest unit** - One change per task
+- **Clear & specific** - "Add rain chart component" not "Charts"
+- **Dependencies first** - If B needs A, A gets lower priority number
+- **Testable** - Each task independently verifiable
+- **Actionable** - Developer knows exactly what to build
 
 **BAD** (too big):
 
-- "Implement user authentication"
+- "Implement the chart feature"
 
 **GOOD** (small tasks):
 
-- "Add login form HTML"
-- "Add password validation"
-- "Add form submission handler"
-- "Add session storage"
-- "Add logout button"
-- "Add session check on page load"
+- "Create chart container component"
+- "Add API call to fetch rain data"
+- "Parse rain data for chart format"
+- "Render bar chart with rain values"
+- "Add date range selector"
+- "Style chart to match app theme"
