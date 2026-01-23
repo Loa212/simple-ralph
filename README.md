@@ -34,6 +34,14 @@ Clean, minimal structure with multi-backend AI support (Claude & Codex) and real
 
 ## Quick Start
 
+One-line install into an existing repo (installs to `.ralph/` and drops git history so it won't interfere with your project):
+
+```bash
+git clone --depth=1 https://github.com/Loa212/simple-ralph .ralph && rm -rf .ralph/.git
+```
+
+To refresh later: `rm -rf .ralph && git clone --depth=1 https://github.com/Loa212/simple-ralph .ralph && rm -rf .ralph/.git`
+
 ```bash
 # Create structure
 mkdir -p .ralph/{lib/backends,prompts,templates}
