@@ -28,8 +28,8 @@ Clean, minimal structure with multi-backend AI support (Claude & Codex) and real
 │   ├── requirements.md.template # Requirements template
 │   └── progress.txt.template   # Progress log template
 │
-└── prompts/
-    └── convert-prd.md         # PRD → JSON/Markdown converter
+├── write-a-prd.md             # PRD creation workflow (questions → output)
+└── convert-prd.md             # Convert existing PRD → JSON/Markdown
 ```
 
 ## Quick Start
@@ -82,17 +82,18 @@ RALPH_BACKEND=codex ./ralph.sh
 
 ## Workflow
 
-### 1. Break Down PRD into Tasks
+### 1. Create a PRD (from scratch)
 
-```bash
-# Use prompts/convert-prd.md
-# Paste as system prompt in Claude
-# Paste your raw PRD
-# Claude outputs JSON + Markdown
-# Update prd.json and requirements.md
-```
+Use `write-a-prd.md` - asks questions one-by-one then outputs:
 
-### 2. Run Ralph Looper
+- `prd.json` - machine-readable tasks
+- `requirements.md` - human-readable breakdown
+
+### 2. Convert Existing PRD
+
+Use `convert-prd.md` if you already have a PRD document from a PM or external source.
+
+### 3. Run Ralph Looper
 
 ```bash
 cd .ralph
