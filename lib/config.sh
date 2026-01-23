@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 # Ralph config
 
-# AI model command
-CLAUDE_CMD="claude --dangerously-skip-permissions --print --verbose --output-format stream-json"
-MAIN_CMD="$CLAUDE_CMD"
+# Backend selection: claude | codex (set via RALPH_BACKEND env var)
+# Usage: RALPH_BACKEND=codex ./ralph.sh
 
 # Configuration
 MAX_LOOPS=${RALPH_MAX_LOOPS:-30}
