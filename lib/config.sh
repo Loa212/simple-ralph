@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 # Ralph config
 
+# Ralph directory (where all ralph files live)
+# This is set by ralph.sh and used by all libs
+RALPH_DIR="${RALPH_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+
 # Backend selection: claude | codex (set via RALPH_BACKEND env var)
 # Usage: RALPH_BACKEND=codex ./ralph.sh
 

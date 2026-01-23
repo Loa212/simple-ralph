@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Token tracking
 
-TOKEN_FILE=".tokens.json"
+# Use RALPH_DIR for token file (set by config.sh)
+TOKEN_FILE="${RALPH_DIR:-.}/.tokens.json"
 
 # Initialize token file
 init_tokens() {

@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 set -e
 
-# Load config and utilities
+# Ralph directory (all files are relative to this)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+export RALPH_DIR="$SCRIPT_DIR"
+
+# Load config and utilities
 source "$SCRIPT_DIR/lib/config.sh"
 source "$SCRIPT_DIR/lib/utils.sh"
 source "$SCRIPT_DIR/lib/tokens.sh"
@@ -16,6 +19,9 @@ validate_backend
 MAX_TASKS="${1:-1000}"
 TOTAL_TASKS_COMPLETED=0
 
+# Prompt file location
+PROMPT_FILE="$RALPH_DIR/ralph-prompt.md"
+
 # Initialize
 init_tokens
 
@@ -26,13 +32,13 @@ for i in {1..100}; do
     print_header "$i"
 
     # Check if PROMPT.md exists
-    if [ ! -f "ralph-prompt.md" ]; then
-        echo -e "${RED}Error: ralph-prompt.md not found${NC}"
+    if [ ! -f "$PROMPT_FILE" ]; then
+        echo -e "${RED}Error: ralph-prompt.md not found in $RALPH_DIR${NC}"
         exit 1
     fi
 
     # Run backend and stream output
-    run_backend "ralph-prompt.md"
+    run_backend "$PROMPT_FILE"
 
     echo ""
 

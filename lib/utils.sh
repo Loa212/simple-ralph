@@ -88,11 +88,12 @@ print_status() {
 log_progress() {
     local loop_num="$1"
     local status_block="$2"
+    local progress_file="${RALPH_DIR:-.}/progress.txt"
     
     {
         echo "=== Loop $loop_num ==="
         echo "Time: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
         echo "$status_block"
         echo ""
-    } >> progress.txt
+    } >> "$progress_file"
 }
