@@ -11,6 +11,7 @@ Clean, minimal structure with multi-backend AI support (Claude & Codex) and real
 ├── prd.json                    # Project requirements (JSON)
 ├── requirements.md             # Task breakdown (Markdown)
 ├── progress.txt                # Auto-generated loop log
+├── findings.txt                # Append-only discoveries log
 ├── .tokens.json                # Token usage tracking
 │
 ├── lib/
@@ -216,3 +217,19 @@ source "$SCRIPT_DIR/backends/mybackend.sh"
 - One task per loop (recommended)
 - All progress logged to `progress.txt`
 - Token usage tracked in `.tokens.json`
+
+## Findings Log
+
+Ralph appends discoveries (errors, surprises, lessons) to `findings.txt` using a fixed metadata template.
+Entries are append-only and separated by `---`.
+
+To generate AGENTS.md-ready fragments:
+
+```bash
+./lib/convert-findings.sh
+```
+
+This writes:
+
+- `findings.fragments.yaml`
+- `findings.fragments.json`

@@ -71,6 +71,9 @@ for i in {1..100}; do
     exit_signal=$(get_status_field "$status_block" "EXIT_SIGNAL")
     
     if [ "$exit_signal" = "true" ]; then
+        if [ -x "$RALPH_DIR/lib/convert-findings.sh" ]; then
+            "$RALPH_DIR/lib/convert-findings.sh" >/dev/null 2>&1 || true
+        fi
         echo ""
         echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
         show_token_summary
