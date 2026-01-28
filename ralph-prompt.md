@@ -37,6 +37,33 @@ You will be called again for the next task. Trust the loop.
 - No git commits - just save files
 - Build it right, not fast
 
+## Findings Log (append-only)
+
+When you discover errors, surprising behaviors, or lessons:
+
+- Append a new entry to `findings.txt` at the repo root.
+- Keep entries concise, human-readable, and append-only.
+- Separate entries with a line containing only `---`.
+- Include all fields: timestamp (UTC ISO8601), source, severity, summary, details, reproduce, evidence, tags.
+- Use this template:
+
+```
+timestamp: 2026-01-28T21:53:00Z
+source: loop-<number> | manual | test
+severity: low | medium | high | critical
+summary: <short summary>
+details: |
+  <concise details>
+reproduce: |
+  1. <step>
+evidence: |
+  <file paths, logs, or output>
+tags: [tag1, tag2]
+---
+```
+
+At session end (or when asked), run `./lib/convert-findings.sh` to generate YAML/JSON fragments for AGENTS.md.
+
 ## 🎯 Status Reporting (CRITICAL)
 
 ALWAYS include at end of response:
