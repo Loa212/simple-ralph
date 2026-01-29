@@ -180,13 +180,46 @@ Override any backend command by setting `CLAUDE_CMD` or `CODEX_CMD` in your envi
 ./tests/run.sh
 ```
 
-The test harness is offline-friendly. Point Ralph at the fake backends and fixtures like this:
+The test harness is offline-friendly and runs shellcheck + bats. It covers:
+
+- Unit tests (status parsing, token logging, rate-limit helpers)
+- Integration tests (looper end-to-end with fake backends and fixtures)
+- Live smoke tests (gated; off by default)
+
+### Fake backends (offline)
+
+Point Ralph at the fake backends and fixtures like this:
 
 ```bash
 CLAUDE_CMD=./tests/bin/fake-claude \
 FIXTURE=./tests/fixtures/claude/valid-stream.jsonl \
 ./ralph.sh
 ```
+
+For multi-loop integration tests, you can provide a fixture sequence:
+
+```bash
+CLAUDE_CMD=./tests/bin/fake-claude \
+FIXTURE_SEQUENCE=./tests/fixtures/claude/in-progress.jsonl:./tests/fixtures/claude/complete.jsonl:./tests/fixtures/claude/exit-signal.jsonl \
+./ralph.sh
+```
+
+To avoid real waiting in tests, override sleep:
+
+```bash
+SLEEP_CMD=":" ./tests/run.sh
+```
+
+### Live smoke tests (gated)
+
+Live smoke tests hit real backends and are skipped unless explicitly enabled.
+Enable them with:
+
+```bash
+RUN_LIVE_TESTS=1 ./tests/run.sh
+```
+
+These tests only verify a single loop and confirm a status block exists. They are intentionally minimal to avoid cost and flakiness.
 
 ## Status Block (CRITICAL)
 

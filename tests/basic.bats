@@ -34,7 +34,7 @@ setup() {
   [[ "$output" == *"✓ Complete!"* ]]
 }
 
-@test "missing status block returns error" {
+@test "missing status block marks blocked" {
   export RALPH_BACKEND=claude
   export CLAUDE_CMD="$ROOT_DIR/tests/bin/fake-claude"
   export FIXTURE="$ROOT_DIR/tests/fixtures/claude/missing-status.jsonl"
@@ -42,5 +42,6 @@ setup() {
   run "$ROOT_DIR/ralph.sh" 1
 
   [ "$status" -eq 1 ]
-  [[ "$output" == *"No status block found"* ]]
+  [[ "$output" == *"STATUS: BLOCKED"* ]]
+  [[ "$output" == *"Missing status block"* ]]
 }

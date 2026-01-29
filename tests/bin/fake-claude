@@ -1,7 +1,28 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-fixture_path="${FIXTURE:-}"
+fixture_path=""
+
+if [[ -n "${FIXTURE_SEQUENCE:-}" ]]; then
+  if [[ -z "${FIXTURE_STATE_FILE:-}" ]]; then
+    FIXTURE_STATE_FILE="${TMPDIR:-/tmp}/ralph-fixture-state"
+  fi
+  IFS=':' read -r -a fixtures <<< "$FIXTURE_SEQUENCE"
+  fixture_index=0
+  if [[ -f "$FIXTURE_STATE_FILE" ]]; then
+    fixture_index="$(cat "$FIXTURE_STATE_FILE" 2>/dev/null || echo 0)"
+  fi
+  if [[ ! "$fixture_index" =~ ^[0-9]+$ ]]; then
+    fixture_index=0
+  fi
+  if [[ "$fixture_index" -ge "${#fixtures[@]}" ]]; then
+    fixture_index=$((${#fixtures[@]} - 1))
+  fi
+  fixture_path="${fixtures[$fixture_index]}"
+  printf '%s' "$((fixture_index + 1))" > "$FIXTURE_STATE_FILE"
+else
+  fixture_path="${FIXTURE:-}"
+fi
 
 if [[ -z "$fixture_path" ]]; then
   echo "fake-claude: FIXTURE env var is required" >&2
