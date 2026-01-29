@@ -34,7 +34,7 @@ MAX_TASKS="${1:-1000}"
 TOTAL_TASKS_COMPLETED=0
 
 # Prompt file location
-PROMPT_FILE="$RALPH_DIR/ralph-prompt.md"
+PROMPT_FILE="${RALPH_PROMPT_FILE:-$RALPH_DIR/ralph-prompt.md}"
 
 # Initialize
 init_tokens
