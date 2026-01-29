@@ -233,7 +233,7 @@ print_status() {
     [ "$status" = "BLOCKED" ] && status_color=$RED
 
     echo ""
-    echo -e "STATUS: ${status_color}${status}${NC}"
+    echo -e "${status_color}STATUS: ${status}${NC}"
     echo "Tasks: $tasks | Files: $files | Tests: $tests"
     echo "Next: $rec"
     echo ""
