@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+fixture_path="${FIXTURE:-}"
+
+if [[ -z "$fixture_path" ]]; then
+  echo "fake-claude: FIXTURE env var is required" >&2
+  exit 2
+fi
+
+if [[ ! -f "$fixture_path" ]]; then
+  echo "fake-claude: fixture not found: $fixture_path" >&2
+  exit 2
+fi
+
+stream_delay="${STREAM_DELAY_SECONDS:-0}"
+
+test_sleep() {
+  local duration="${1:-}"
+  if [[ -n "${SLEEP_CMD:-}" ]]; then
+    # shellcheck disable=SC2086,SC2294
+    eval "$SLEEP_CMD" "$duration"
+  else
+    sleep "$duration"
+  fi
+}
+
+while IFS= read -r line || [[ -n "$line" ]]; do
+  printf '%s\n' "$line"
+  if [[ "$stream_delay" != "0" && -n "$stream_delay" ]]; then
+    test_sleep "$stream_delay"
+  fi
+done < "$fixture_path"

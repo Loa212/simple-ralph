@@ -1,3 +1,0 @@
-# Ralph findings log (append-only)
-# Fields: timestamp, source, severity, summary, details, reproduce, evidence, tags
-# Separate entries with a single line containing: ---

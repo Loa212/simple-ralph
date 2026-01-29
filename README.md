@@ -139,6 +139,11 @@ Set these in your shell, CI environment, or a wrapper script. Env vars override 
 | `RALPH_MAX_PARALLEL`    | `4`                  | Max parallel operations (available for backends/scripts)     |
 | `RALPH_VERBOSE`         | `false`              | Enable verbose/debug logging (`true` or `1`)                 |
 | `RALPH_DRY_RUN`         | `false`              | Show resolved config and exit without running (`true` or `1`)|
+| `RALPH_NO_SPINNER`      | `false`              | Disable spinner output (`true` or `1`)                       |
+| `RALPH_NOW_CMD`         | _(empty)_            | Command to print a deterministic UTC timestamp               |
+| `SLEEP_CMD`             | _(empty)_            | Command to replace `sleep` in tests (e.g., `:`)              |
+| `CLAUDE_CMD`            | _(see below)_        | Override Claude CLI command                                  |
+| `CODEX_CMD`             | _(see below)_        | Override Codex CLI command                                   |
 
 **Examples:**
 
@@ -164,7 +169,23 @@ claude --dangerously-skip-permissions --print --verbose --output-format stream-j
 **Codex** (`lib/backends/codex.sh`):
 
 ```bash
-codex exec --json --full-auto -
+codex exec --json --dangerously-bypass-approvals-and-sandbox
+```
+
+Override any backend command by setting `CLAUDE_CMD` or `CODEX_CMD` in your environment.
+
+## Testing
+
+```bash
+./tests/run.sh
+```
+
+The test harness is offline-friendly. Point Ralph at the fake backends and fixtures like this:
+
+```bash
+CLAUDE_CMD=./tests/bin/fake-claude \
+FIXTURE=./tests/fixtures/claude/valid-stream.jsonl \
+./ralph.sh
 ```
 
 ## Status Block (CRITICAL)
@@ -235,7 +256,7 @@ source "$SCRIPT_DIR/backends/mybackend.sh"
 ## Notes
 
 - Claude uses `--dangerously-skip-permissions` for file writes
-- Codex uses `--full-auto` for autonomous execution
+- Codex uses `--dangerously-bypass-approvals-and-sandbox` for autonomous execution
 - Streams output in real-time with fun spinner
 - One task per loop (recommended)
 - All progress logged to `progress.txt`

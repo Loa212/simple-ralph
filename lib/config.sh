@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Ralph config
+# shellcheck disable=SC2034
 
 # Ralph directory (where all ralph files live)
 # This is set by ralph.sh and used by all libs
@@ -16,6 +17,9 @@ FINDINGS_PATH=${RALPH_FINDINGS_PATH:-"${RALPH_DIR}/findings.txt"}
 MAX_PARALLEL=${RALPH_MAX_PARALLEL:-4}
 VERBOSE=${RALPH_VERBOSE:-false}
 DRY_RUN=${RALPH_DRY_RUN:-false}
+RALPH_NO_SPINNER=${RALPH_NO_SPINNER:-false}
+RALPH_NOW_CMD=${RALPH_NOW_CMD:-}
+SLEEP_CMD=${SLEEP_CMD:-}
 
 # Verbose logging helper
 verbose_log() {

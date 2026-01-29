@@ -4,7 +4,9 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Load backends
+# shellcheck source=lib/backends/claude.sh
 source "$SCRIPT_DIR/backends/claude.sh"
+# shellcheck source=lib/backends/codex.sh
 source "$SCRIPT_DIR/backends/codex.sh"
 
 # Backend selection: claude | codex

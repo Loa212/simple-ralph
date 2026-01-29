@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 # Codex backend - JSON stream parser
+# shellcheck disable=SC2034
 # Note: Codex CLI --json mode emits complete items, not incremental tokens.
 # True streaming requires Codex CLI updates.
 
 # Codex command - use dangerously-bypass for full write access (like Claude's --dangerously-skip-permissions)
-CODEX_CMD="codex exec --json --dangerously-bypass-approvals-and-sandbox"
+# Overridable via env
+CODEX_CMD="${CODEX_CMD:-codex exec --json --dangerously-bypass-approvals-and-sandbox}"
 
 # Run Codex and parse JSONL output
 # Sets: BACKEND_OUTPUT, BACKEND_INPUT_TOKENS, BACKEND_OUTPUT_TOKENS, BACKEND_RATE_LIMITED, BACKEND_RATE_LIMIT_MSG
@@ -20,7 +22,8 @@ run_codex() {
     while IFS= read -r line; do
         # Check for error events (including rate limits / auth issues)
         if echo "$line" | jq -e '.type == "error"' &>/dev/null 2>&1; then
-            local error_msg=$(echo "$line" | jq -r '.message // "Unknown error"' 2>/dev/null)
+            local error_msg
+            error_msg=$(echo "$line" | jq -r '.message // "Unknown error"' 2>/dev/null)
             if echo "$error_msg" | grep -qi "rate\|limit\|token\|auth\|expired"; then
                 BACKEND_RATE_LIMITED=true
                 BACKEND_RATE_LIMIT_MSG="$error_msg"
@@ -29,7 +32,8 @@ run_codex() {
 
         # Check for turn.failed events
         if echo "$line" | jq -e '.type == "turn.failed"' &>/dev/null 2>&1; then
-            local error_msg=$(echo "$line" | jq -r '.error.message // "Turn failed"' 2>/dev/null)
+            local error_msg
+            error_msg=$(echo "$line" | jq -r '.error.message // "Turn failed"' 2>/dev/null)
             if echo "$error_msg" | grep -qi "rate\|limit\|token\|auth\|expired"; then
                 BACKEND_RATE_LIMITED=true
                 BACKEND_RATE_LIMIT_MSG="$error_msg"

@@ -1,9 +1,34 @@
 #!/usr/bin/env bash
 # Utility functions
 
+ralph_now() {
+    if [[ -n "${RALPH_NOW_CMD:-}" ]]; then
+        # Allow custom command for deterministic timestamps in tests.
+        # shellcheck disable=SC2086,SC2294
+        eval "$RALPH_NOW_CMD"
+    else
+        date -u +%Y-%m-%dT%H:%M:%SZ
+    fi
+}
+
+ralph_sleep() {
+    local duration="${1:-}"
+    if [[ -n "${SLEEP_CMD:-}" ]]; then
+        # Allow injected sleep command for tests (e.g., SLEEP_CMD=":").
+        # shellcheck disable=SC2086,SC2294
+        eval "$SLEEP_CMD" "$duration"
+    else
+        sleep "$duration"
+    fi
+}
+
 # Start spinner with rotating words
 start_spinner() {
     local phase_desc="${1:-Processing...}"
+
+    if [[ "${RALPH_NO_SPINNER:-}" == "true" || "${RALPH_NO_SPINNER:-}" == "1" ]]; then
+        return
+    fi
     
     if [[ -n "$SPINNER_PID" ]] && kill -0 "$SPINNER_PID" 2>/dev/null; then
         return
@@ -24,7 +49,7 @@ start_spinner() {
             local char="${SPINNER_CHARS:i++%${#SPINNER_CHARS}:1}"
             local action="${SPINNER_WORDS[$word_idx]}"
             printf "\r${GREEN}%s${NC} %s %s" "$char" "$action" "$phase_desc"
-            sleep 0.1
+            ralph_sleep 0.1
         done
     ) &
     SPINNER_PID=$!
@@ -67,11 +92,16 @@ print_header() {
 # Print status
 print_status() {
     local status_block="$1"
-    local status=$(get_status_field "$status_block" "STATUS")
-    local tasks=$(get_status_field "$status_block" "TASKS_COMPLETED_THIS_LOOP")
-    local files=$(get_status_field "$status_block" "FILES_MODIFIED")
-    local tests=$(get_status_field "$status_block" "TESTS_STATUS")
-    local rec=$(get_status_field "$status_block" "RECOMMENDATION")
+    local status
+    local tasks
+    local files
+    local tests
+    local rec
+    status=$(get_status_field "$status_block" "STATUS")
+    tasks=$(get_status_field "$status_block" "TASKS_COMPLETED_THIS_LOOP")
+    files=$(get_status_field "$status_block" "FILES_MODIFIED")
+    tests=$(get_status_field "$status_block" "TESTS_STATUS")
+    rec=$(get_status_field "$status_block" "RECOMMENDATION")
 
     local status_color=$YELLOW
     [ "$status" = "COMPLETE" ] && status_color=$GREEN
@@ -98,7 +128,7 @@ log_progress() {
     
     {
         echo "=== Loop $loop_num ==="
-        echo "Time: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+        echo "Time: $(ralph_now)"
         echo "$status_block"
         echo ""
     } >> "$progress_file"
