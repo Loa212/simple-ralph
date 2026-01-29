@@ -2,9 +2,11 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-INPUT_FILE="$SCRIPT_DIR/findings.txt"
-OUTPUT_YAML="$SCRIPT_DIR/findings.fragments.yaml"
-OUTPUT_JSON="$SCRIPT_DIR/findings.fragments.json"
+RALPH_DIR="${RALPH_DIR:-$(cd "$SCRIPT_DIR/.." && pwd)}"
+INPUT_FILE="${RALPH_FINDINGS_PATH:-${RALPH_DIR}/findings.txt}"
+FINDINGS_DIR="$(dirname "$INPUT_FILE")"
+OUTPUT_YAML="$FINDINGS_DIR/findings.fragments.yaml"
+OUTPUT_JSON="$FINDINGS_DIR/findings.fragments.json"
 
 if [ ! -f "$INPUT_FILE" ]; then
   echo "findings.txt not found at $INPUT_FILE" >&2

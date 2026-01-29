@@ -9,8 +9,20 @@ RALPH_DIR="${RALPH_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 # Usage: RALPH_BACKEND=codex ./ralph.sh
 
 # Configuration
-MAX_LOOPS=${RALPH_MAX_LOOPS:-30}
-RATE_LIMIT_WAIT_MINUTES=${RALPH_RATE_LIMIT_WAIT:-15}
+# Precedence: env vars > defaults
+MAX_LOOPS=${RALPH_LOOP_LIMIT:-${RALPH_MAX_LOOPS:-30}}
+RATE_LIMIT_WAIT_MINUTES=${RALPH_RATE_LIMIT:-${RALPH_RATE_LIMIT_WAIT:-15}}
+FINDINGS_PATH=${RALPH_FINDINGS_PATH:-"${RALPH_DIR}/findings.txt"}
+MAX_PARALLEL=${RALPH_MAX_PARALLEL:-4}
+VERBOSE=${RALPH_VERBOSE:-false}
+DRY_RUN=${RALPH_DRY_RUN:-false}
+
+# Verbose logging helper
+verbose_log() {
+    if [[ "$VERBOSE" == "true" || "$VERBOSE" == "1" ]]; then
+        echo -e "${BLUE}[verbose]${NC} $*" >&2
+    fi
+}
 
 # Colors
 RED='\033[0;31m'
