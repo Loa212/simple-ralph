@@ -15,6 +15,16 @@ if ! command -v bats >/dev/null 2>&1; then
   exit 1
 fi
 
+if ! command -v jq >/dev/null 2>&1; then
+  echo "jq is required but not installed" >&2
+  exit 1
+fi
+
+if ! command -v bc >/dev/null 2>&1; then
+  echo "bc is required but not installed" >&2
+  exit 1
+fi
+
 sh_files=()
 if command -v rg >/dev/null 2>&1; then
   while IFS= read -r file; do

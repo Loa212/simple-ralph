@@ -1,0 +1,3 @@
+{"type":"assistant","message":{"content":[{"type":"text","text":"Loop 2 output\n"}]}}
+{"type":"assistant","message":{"content":[{"type":"text","text":"---RALPH_STATUS---\nSTATUS: COMPLETE\nTASKS_COMPLETED_THIS_LOOP: 1\nFILES_MODIFIED: 1\nTESTS_STATUS: NOT_RUN\nWORK_TYPE: IMPLEMENTATION\nEXIT_SIGNAL: false\nRECOMMENDATION: wrap up\n---END_RALPH_STATUS---\n"}]}}
+{"type":"result","usage":{"input_tokens":11,"output_tokens":21}}

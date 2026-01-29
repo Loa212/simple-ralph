@@ -34,7 +34,7 @@ MAX_TASKS="${1:-1000}"
 TOTAL_TASKS_COMPLETED=0
 
 # Prompt file location
-PROMPT_FILE="$RALPH_DIR/ralph-prompt.md"
+PROMPT_FILE="${RALPH_PROMPT_FILE:-$RALPH_DIR/ralph-prompt.md}"
 
 # Initialize
 init_tokens
@@ -88,13 +88,8 @@ for i in {1..100}; do
         continue
     fi
 
-    # Extract status block
-    status_block=$(extract_status "$BACKEND_OUTPUT")
-    
-    if [ -z "$status_block" ]; then
-        echo -e "${RED}✗ No status block found${NC}"
-        exit 1
-    fi
+    # Extract and normalize status block
+    status_block=$(normalize_status_block "$(extract_status "$BACKEND_OUTPUT")")
 
     print_status "$status_block"
 
@@ -106,6 +101,14 @@ for i in {1..100}; do
     tasks_this_loop=$(get_status_field "$status_block" "TASKS_COMPLETED_THIS_LOOP")
     tasks_this_loop=${tasks_this_loop:-0}
     TOTAL_TASKS_COMPLETED=$((TOTAL_TASKS_COMPLETED + tasks_this_loop))
+
+    # Stop on BLOCKED status
+    status=$(get_status_field "$status_block" "STATUS")
+    if [ "$status" = "BLOCKED" ]; then
+        echo -e "${RED}✗ Blocked${NC}"
+        show_token_summary
+        exit 1
+    fi
 
     # Check exit signal
     exit_signal=$(get_status_field "$status_block" "EXIT_SIGNAL")

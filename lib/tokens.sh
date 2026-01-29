@@ -36,6 +36,22 @@ get_pricing() {
     esac
 }
 
+token_file_valid() {
+    jq -e . "$TOKEN_FILE" >/dev/null 2>&1
+}
+
+ensure_token_file() {
+    if [ ! -f "$TOKEN_FILE" ]; then
+        init_tokens
+        return
+    fi
+
+    if ! token_file_valid; then
+        rm -f "$TOKEN_FILE"
+        init_tokens
+    fi
+}
+
 # Initialize token file
 init_tokens() {
     get_pricing
@@ -87,6 +103,7 @@ log_tokens() {
     
     # Get backend-specific pricing
     get_pricing
+    ensure_token_file
     
     local total_tokens=$((input_tokens + output_tokens))
     
@@ -157,6 +174,10 @@ show_summary() {
         echo "Token file not found"
         return
     fi
+    if ! token_file_valid; then
+        echo "Token file is invalid"
+        return
+    fi
 
     get_pricing
     echo "=== Token Usage Summary ==="
@@ -185,6 +206,9 @@ show_summary() {
 # Show token summary for terminal (compact)
 show_token_summary() {
     if [ ! -f "$TOKEN_FILE" ]; then
+        return
+    fi
+    if ! token_file_valid; then
         return
     fi
 
