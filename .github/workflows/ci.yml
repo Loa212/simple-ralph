@@ -12,6 +12,6 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y shellcheck bats
+          sudo apt-get install -y shellcheck bats jq bc
       - name: Run tests
         run: ./tests/run.sh
