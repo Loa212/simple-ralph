@@ -103,3 +103,23 @@ log_progress() {
         echo ""
     } >> "$progress_file"
 }
+
+# Remove temporary files created during loop execution.
+cleanup_temp_files() {
+    local findings_path="${FINDINGS_PATH:-${RALPH_DIR}/findings.txt}"
+    local findings_dir
+    findings_dir="$(dirname "$findings_path")"
+    local -a temp_files=(
+        "${RALPH_DIR}/progress.txt"
+        "${findings_path}"
+        "${findings_dir}/findings.fragments.yaml"
+        "${findings_dir}/findings.fragments.json"
+    )
+
+    for temp_file in "${temp_files[@]}"; do
+        if [[ -f "$temp_file" ]]; then
+            verbose_log "Removing temp file: $temp_file"
+            rm -f "$temp_file"
+        fi
+    done
+}

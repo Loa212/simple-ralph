@@ -105,8 +105,15 @@ for i in {1..100}; do
     exit_signal=$(get_status_field "$status_block" "EXIT_SIGNAL")
     
     if [ "$exit_signal" = "true" ]; then
+        convert_ok=true
         if [ -x "$RALPH_DIR/lib/convert-findings.sh" ]; then
-            "$RALPH_DIR/lib/convert-findings.sh" >/dev/null 2>&1 || true
+            if ! "$RALPH_DIR/lib/convert-findings.sh" >/dev/null 2>&1; then
+                convert_ok=false
+                echo -e "${YELLOW}Warning: convert-findings failed; skipping cleanup${NC}"
+            fi
+        fi
+        if [ "$convert_ok" = true ]; then
+            cleanup_temp_files
         fi
         echo ""
         echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
