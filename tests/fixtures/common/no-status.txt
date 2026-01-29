@@ -1,0 +1,1 @@
+This output intentionally lacks a status block.

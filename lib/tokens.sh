@@ -82,6 +82,8 @@ log_tokens() {
     local task="$2"
     local input_tokens="$3"
     local output_tokens="$4"
+    local timestamp
+    timestamp="$(ralph_now)"
     
     # Get backend-specific pricing
     get_pricing
@@ -91,7 +93,8 @@ log_tokens() {
     if [ "$PRICING_MODE" = "per_credit" ]; then
         # Credit-based pricing (Codex)
         local credits=$CREDITS_PER_CALL
-        local cost_usd=$(echo "scale=4; $credits * $CREDIT_PRICE_USD" | bc)
+        local cost_usd
+        cost_usd=$(echo "scale=4; $credits * $CREDIT_PRICE_USD" | bc)
         
         if [ -f "$TOKEN_FILE" ]; then
             jq \
@@ -101,6 +104,7 @@ log_tokens() {
                 --arg credits "$credits" \
                 --arg cost "$cost_usd" \
                 --arg backend "$RALPH_BACKEND" \
+                --arg timestamp "$timestamp" \
                 '.loops += [{
                     "loop_num": ($loop | tonumber),
                     "task": $task,
@@ -108,7 +112,7 @@ log_tokens() {
                     "credits_used": ($credits | tonumber),
                     "cost_usd": ($cost | tonumber),
                     "backend": $backend,
-                    "timestamp": now | strftime("%Y-%m-%dT%H:%M:%SZ")
+                    "timestamp": $timestamp
                 }] |
                 .total_tokens += ($tokens | tonumber) |
                 .total_credits += ($credits | tonumber) |
@@ -117,9 +121,12 @@ log_tokens() {
         fi
     else
         # Per-token pricing (Claude)
-        local input_cost=$(echo "scale=6; $input_tokens * $INPUT_PRICE_PER_1K / 1000" | bc)
-        local output_cost=$(echo "scale=6; $output_tokens * $OUTPUT_PRICE_PER_1K / 1000" | bc)
-        local total_cost_usd=$(echo "$input_cost + $output_cost" | bc)
+        local input_cost
+        local output_cost
+        local total_cost_usd
+        input_cost=$(echo "scale=6; $input_tokens * $INPUT_PRICE_PER_1K / 1000" | bc)
+        output_cost=$(echo "scale=6; $output_tokens * $OUTPUT_PRICE_PER_1K / 1000" | bc)
+        total_cost_usd=$(echo "$input_cost + $output_cost" | bc)
         
         if [ -f "$TOKEN_FILE" ]; then
             jq \
@@ -128,13 +135,14 @@ log_tokens() {
                 --arg tokens "$total_tokens" \
                 --arg cost_usd "$total_cost_usd" \
                 --arg backend "$RALPH_BACKEND" \
+                --arg timestamp "$timestamp" \
                 '.loops += [{
                     "loop_num": ($loop | tonumber),
                     "task": $task,
                     "tokens_used": ($tokens | tonumber),
                     "cost_usd": ($cost_usd | tonumber),
                     "backend": $backend,
-                    "timestamp": now | strftime("%Y-%m-%dT%H:%M:%SZ")
+                    "timestamp": $timestamp
                 }] |
                 .total_tokens += ($tokens | tonumber) |
                 .total_cost_usd += ($cost_usd | tonumber)' \
@@ -181,12 +189,16 @@ show_token_summary() {
     fi
 
     get_pricing
-    local total_tokens=$(jq -r '.total_tokens' "$TOKEN_FILE")
-    local loop_count=$(jq -r '.loops | length' "$TOKEN_FILE")
-    local total_usd=$(jq -r '.total_cost_usd | . * 100 | round / 100' "$TOKEN_FILE")
+    local total_tokens
+    local loop_count
+    local total_usd
+    total_tokens=$(jq -r '.total_tokens' "$TOKEN_FILE")
+    loop_count=$(jq -r '.loops | length' "$TOKEN_FILE")
+    total_usd=$(jq -r '.total_cost_usd | . * 100 | round / 100' "$TOKEN_FILE")
 
     if [ "$PRICING_MODE" = "per_credit" ]; then
-        local total_credits=$(jq -r '.total_credits // 0' "$TOKEN_FILE")
+        local total_credits
+        total_credits=$(jq -r '.total_credits // 0' "$TOKEN_FILE")
         echo "Tokens: $total_tokens | Credits: $total_credits | Cost: \$${total_usd} | Loops: $loop_count"
     else
         echo "Tokens: $total_tokens | Cost: \$${total_usd} | Loops: $loop_count"

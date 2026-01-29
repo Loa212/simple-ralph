@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Rate limiting utilities
+# shellcheck disable=SC2034
 
 # Check if a line indicates a rate limit error
 # Returns 0 if rate limited, 1 otherwise
@@ -21,6 +22,6 @@ handle_rate_limit() {
     
     echo -e "${YELLOW}⏳ Rate limited: $msg${NC}"
     echo -e "${YELLOW}   Waiting $RATE_LIMIT_WAIT_MINUTES minutes before retrying...${NC}"
-    sleep $((RATE_LIMIT_WAIT_MINUTES * 60))
+    ralph_sleep "$((RATE_LIMIT_WAIT_MINUTES * 60))"
     echo -e "${GREEN}   Resuming...${NC}"
 }

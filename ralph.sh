@@ -25,6 +25,9 @@ verbose_log "FINDINGS_PATH=$FINDINGS_PATH"
 verbose_log "DRY_RUN=$DRY_RUN"
 verbose_log "MAX_PARALLEL=$MAX_PARALLEL"
 verbose_log "RATE_LIMIT_WAIT_MINUTES=$RATE_LIMIT_WAIT_MINUTES"
+verbose_log "RALPH_NO_SPINNER=$RALPH_NO_SPINNER"
+verbose_log "RALPH_NOW_CMD=$RALPH_NOW_CMD"
+verbose_log "SLEEP_CMD=$SLEEP_CMD"
 
 # Max tasks to complete (default: 1000 = effectively unlimited)
 MAX_TASKS="${1:-1000}"
@@ -47,6 +50,9 @@ if [[ "$DRY_RUN" == "true" || "$DRY_RUN" == "1" ]]; then
     echo "  FINDINGS_PATH=$FINDINGS_PATH"
     echo "  MAX_PARALLEL=$MAX_PARALLEL"
     echo "  RATE_LIMIT_WAIT_MINUTES=$RATE_LIMIT_WAIT_MINUTES"
+    echo "  RALPH_NO_SPINNER=$RALPH_NO_SPINNER"
+    echo "  RALPH_NOW_CMD=$RALPH_NOW_CMD"
+    echo "  SLEEP_CMD=$SLEEP_CMD"
     echo "  PROMPT_FILE=$PROMPT_FILE"
     echo "  VERBOSE=$VERBOSE"
     exit 0

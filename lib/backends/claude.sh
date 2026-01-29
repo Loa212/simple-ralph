@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # Claude backend - stream parser
+# shellcheck disable=SC2034
 
-# Claude command
-CLAUDE_CMD="claude --dangerously-skip-permissions --print --verbose --output-format stream-json"
+# Claude command (overridable via env)
+CLAUDE_CMD="${CLAUDE_CMD:-claude --dangerously-skip-permissions --print --verbose --output-format stream-json}"
 
 # Run Claude and parse streaming JSON output
 # Sets: BACKEND_OUTPUT, BACKEND_INPUT_TOKENS, BACKEND_OUTPUT_TOKENS, BACKEND_RATE_LIMITED, BACKEND_RATE_LIMIT_MSG
