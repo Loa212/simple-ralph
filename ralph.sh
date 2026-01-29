@@ -15,6 +15,17 @@ source "$SCRIPT_DIR/lib/backend.sh"
 # Validate backend selection
 validate_backend
 
+# Export FINDINGS_PATH so backends and subprocesses can use it
+export RALPH_FINDINGS_PATH="$FINDINGS_PATH"
+
+verbose_log "RALPH_DIR=$RALPH_DIR"
+verbose_log "RALPH_BACKEND=$RALPH_BACKEND"
+verbose_log "MAX_LOOPS=$MAX_LOOPS"
+verbose_log "FINDINGS_PATH=$FINDINGS_PATH"
+verbose_log "DRY_RUN=$DRY_RUN"
+verbose_log "MAX_PARALLEL=$MAX_PARALLEL"
+verbose_log "RATE_LIMIT_WAIT_MINUTES=$RATE_LIMIT_WAIT_MINUTES"
+
 # Max tasks to complete (default: 1000 = effectively unlimited)
 MAX_TASKS="${1:-1000}"
 TOTAL_TASKS_COMPLETED=0
@@ -27,8 +38,29 @@ init_tokens
 
 echo -e "${BLUE}Using backend: $(get_backend_name)${NC}"
 
+# Dry-run: show config and exit
+if [[ "$DRY_RUN" == "true" || "$DRY_RUN" == "1" ]]; then
+    echo -e "${YELLOW}Dry-run mode — showing config and exiting${NC}"
+    echo "  RALPH_BACKEND=$RALPH_BACKEND"
+    echo "  MAX_LOOPS=$MAX_LOOPS"
+    echo "  MAX_TASKS=$MAX_TASKS"
+    echo "  FINDINGS_PATH=$FINDINGS_PATH"
+    echo "  MAX_PARALLEL=$MAX_PARALLEL"
+    echo "  RATE_LIMIT_WAIT_MINUTES=$RATE_LIMIT_WAIT_MINUTES"
+    echo "  PROMPT_FILE=$PROMPT_FILE"
+    echo "  VERBOSE=$VERBOSE"
+    exit 0
+fi
+
 # Main loop (safety cap of 100 iterations)
 for i in {1..100}; do
+    # Respect MAX_LOOPS from config (env-driven)
+    if [ "$i" -gt "$MAX_LOOPS" ]; then
+        echo -e "${YELLOW}Reached loop limit ($MAX_LOOPS)${NC}"
+        show_token_summary
+        exit 0
+    fi
+
     print_header "$i"
 
     # Check if PROMPT.md exists
@@ -36,6 +68,8 @@ for i in {1..100}; do
         echo -e "${RED}Error: ralph-prompt.md not found in $RALPH_DIR${NC}"
         exit 1
     fi
+
+    verbose_log "Starting loop $i / $MAX_LOOPS"
 
     # Run backend and stream output
     run_backend "$PROMPT_FILE"

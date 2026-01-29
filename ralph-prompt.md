@@ -41,7 +41,7 @@ You will be called again for the next task. Trust the loop.
 
 When you discover errors, surprising behaviors, or lessons:
 
-- Append a new entry to `findings.txt` at the repo root.
+- Append a new entry to the findings file (default: `findings.txt` at the repo root, or the path set via `RALPH_FINDINGS_PATH`).
 - Keep entries concise, human-readable, and append-only.
 - Separate entries with a line containing only `---`.
 - Include all fields: timestamp (UTC ISO8601), source, severity, summary, details, reproduce, evidence, tags.

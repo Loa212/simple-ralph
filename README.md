@@ -124,11 +124,34 @@ Ralph will:
 
 ### Environment Variables
 
-| Variable                | Default  | Description                          |
-| ----------------------- | -------- | ------------------------------------ |
-| `RALPH_BACKEND`         | `claude` | Backend to use (`claude` or `codex`) |
-| `RALPH_MAX_LOOPS`       | `30`     | Maximum loop iterations              |
-| `RALPH_RATE_LIMIT_WAIT` | `15`     | Minutes to wait on rate limit        |
+Set these in your shell, CI environment, or a wrapper script. Env vars override built-in defaults.
+
+**Precedence:** env vars > defaults.
+
+| Variable                | Default              | Description                                                  |
+| ----------------------- | -------------------- | ------------------------------------------------------------ |
+| `RALPH_BACKEND`         | `claude`             | Backend to use (`claude` or `codex`)                         |
+| `RALPH_LOOP_LIMIT`      | `30`                 | Max loop iterations (alias: `RALPH_MAX_LOOPS`)               |
+| `RALPH_MAX_LOOPS`       | `30`                 | Max loop iterations (legacy, use `RALPH_LOOP_LIMIT`)         |
+| `RALPH_FINDINGS_PATH`   | `$RALPH_DIR/findings.txt` | Path to the findings log file                           |
+| `RALPH_RATE_LIMIT`      | `15`                 | Minutes to wait on rate limit (alias: `RALPH_RATE_LIMIT_WAIT`) |
+| `RALPH_RATE_LIMIT_WAIT` | `15`                 | Minutes to wait on rate limit (legacy)                       |
+| `RALPH_MAX_PARALLEL`    | `4`                  | Max parallel operations (available for backends/scripts)     |
+| `RALPH_VERBOSE`         | `false`              | Enable verbose/debug logging (`true` or `1`)                 |
+| `RALPH_DRY_RUN`         | `false`              | Show resolved config and exit without running (`true` or `1`)|
+
+**Examples:**
+
+```bash
+# Run with verbose logging and a custom findings path
+RALPH_VERBOSE=true RALPH_FINDINGS_PATH=./my-findings.txt ./ralph.sh
+
+# Dry-run to verify configuration
+RALPH_DRY_RUN=true RALPH_LOOP_LIMIT=10 ./ralph.sh
+
+# Limit to 10 loops with Codex backend
+RALPH_LOOP_LIMIT=10 RALPH_BACKEND=codex ./ralph.sh
+```
 
 ### Backend Commands (lib/backends/)
 
